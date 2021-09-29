@@ -42,6 +42,7 @@ under the License.
         <module>flink-sql-connector-postgres-cdc</module>
         <module>flink-sql-connector-mongodb-cdc</module>
         <module>flink-format-changelog-json</module>
+        <module>flink-connector-sqlserver-cdc</module>
     </modules>
 
     <licenses>
