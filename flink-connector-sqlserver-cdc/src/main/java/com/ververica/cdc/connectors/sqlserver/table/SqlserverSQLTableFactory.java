@@ -83,8 +83,15 @@ public class SqlserverSQLTableFactory implements DynamicTableSourceFactory {
                     .noDefaultValue()
                     .withDescription("Table name of the Sqlserver database to monitor.");
 
-
-
+    private static final ConfigOption<String> SNAPSHOT_MODE =
+            ConfigOptions.key("snapshot-mode")
+                    .stringType()
+                    .defaultValue("initial")
+                    .withDescription(
+                            "The criteria for running a snapshot upon startup of the connector. \"\n"
+                                    + "Options include: \"\n"
+                                    + "'initial' (the default) to specify the connector should run a snapshot only when no offsets are available for the logical server name; \"\n"
+                                    + "'schema_only' to specify the connector should run a snapshot of the schema when no offsets are available for the logical server name. ");
 
     @Override
     public DynamicTableSource createDynamicTableSource(DynamicTableFactory.Context context) {
@@ -99,6 +106,7 @@ public class SqlserverSQLTableFactory implements DynamicTableSourceFactory {
         String databaseName = config.get(DATABASE_NAME);
         String schemaName = config.get(SCHEMA_NAME);
         String tableName = config.get(TABLE_NAME);
+        String snapshotMode = config.get(SNAPSHOT_MODE);
         int port = config.get(PORT);
 
         TableSchema physicalSchema =
@@ -113,6 +121,7 @@ public class SqlserverSQLTableFactory implements DynamicTableSourceFactory {
                 tableName,
                 username,
                 password,
+                snapshotMode,
                 getDebeziumProperties(context.getCatalogTable().getOptions()));
     }
 
@@ -137,6 +146,7 @@ public class SqlserverSQLTableFactory implements DynamicTableSourceFactory {
     public Set<ConfigOption<?>> optionalOptions() {
         Set<ConfigOption<?>> options = new HashSet<>();
         options.add(PORT);
+        options.add(SNAPSHOT_MODE);
         return options;
     }
 }

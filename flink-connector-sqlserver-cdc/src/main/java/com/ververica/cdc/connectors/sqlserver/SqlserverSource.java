@@ -33,7 +33,6 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * Sqlserver.
  */
 public class SqlserverSource {
-
     private static final long DEFAULT_HEARTBEAT_MS = Duration.ofMinutes(5).toMillis();
 
     public static <T> Builder<T> builder() {
@@ -48,6 +47,7 @@ public class SqlserverSource {
         private String database;
         private String username;
         private String password;
+        private String snapshotMode;
         private String[] schemaList;
         private String[] tableList;
         private Properties dbzProperties;
@@ -105,6 +105,14 @@ public class SqlserverSource {
             return this;
         }
 
+        /**
+         * The criteria for running a snapshot upon startup of the connector. Detail see {@link
+         * io.debezium.connector.sqlserver.SqlServerConnectorConfig.SnapshotMode}
+         */
+        public Builder<T> snapshotMode(String snapshotMode) {
+            this.snapshotMode = snapshotMode;
+            return this;
+        }
 
         /** The Debezium Postgres connector properties. */
         public Builder<T> debeziumProperties(Properties properties) {
@@ -135,6 +143,7 @@ public class SqlserverSource {
             props.setProperty("database.user", checkNotNull(username));
             props.setProperty("database.password", checkNotNull(password));
             props.setProperty("database.port", String.valueOf(port));
+            props.setProperty("snapshot.mode", snapshotMode);
             // we have to enable heartbeat for PG to make sure DebeziumChangeConsumer#handleBatch
             // is invoked after job restart
             props.setProperty("heartbeat.interval.ms", String.valueOf(DEFAULT_HEARTBEAT_MS));

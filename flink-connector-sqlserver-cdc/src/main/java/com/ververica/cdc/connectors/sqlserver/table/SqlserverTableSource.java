@@ -53,6 +53,7 @@ public class SqlserverTableSource implements ScanTableSource {
     private final String tableName;
     private final String username;
     private final String password;
+    private final String snapshotMode;
     private final Properties dbzProperties;
 
     public SqlserverTableSource(
@@ -64,6 +65,7 @@ public class SqlserverTableSource implements ScanTableSource {
             String tableName,
             String username,
             String password,
+            String snapshotMode,
             Properties dbzProperties) {
         this.physicalSchema = physicalSchema;
         this.port = port;
@@ -73,6 +75,7 @@ public class SqlserverTableSource implements ScanTableSource {
         this.tableName = checkNotNull(tableName);
         this.username = checkNotNull(username);
         this.password = checkNotNull(password);
+        this.snapshotMode = checkNotNull(snapshotMode);
         this.dbzProperties = dbzProperties;
     }
 
@@ -93,10 +96,7 @@ public class SqlserverTableSource implements ScanTableSource {
                 scanContext.createTypeInformation(physicalSchema.toRowDataType());
         DebeziumDeserializationSchema<RowData> deserializer =
                 new RowDataDebeziumDeserializeSchema(
-                        rowType,
-                        typeInfo,
-                        ((rowData, rowKind) -> {}),
-                        ZoneId.of("UTC"));
+                        rowType, typeInfo, ((rowData, rowKind) -> {}), ZoneId.of("UTC"));
         DebeziumSourceFunction<RowData> sourceFunction =
                 SqlserverSource.<RowData>builder()
                         .hostname(hostname)
@@ -106,6 +106,7 @@ public class SqlserverTableSource implements ScanTableSource {
                         .tableList(schemaName + "." + tableName)
                         .username(username)
                         .password(password)
+                        .snapshotMode(snapshotMode)
                         .debeziumProperties(dbzProperties)
                         .deserializer(deserializer)
                         .build();
@@ -123,6 +124,7 @@ public class SqlserverTableSource implements ScanTableSource {
                 tableName,
                 username,
                 password,
+                snapshotMode,
                 dbzProperties);
     }
 
