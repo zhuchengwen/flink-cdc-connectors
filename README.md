@@ -24,8 +24,11 @@ area String
 )
 
 ```
+
 The above examples are all required parameters, and the non required parameters are as follows：
+
 snapshot-mode： default：initial, also can use schema_only 
+
 schema-name:  default:dbo
 
 
